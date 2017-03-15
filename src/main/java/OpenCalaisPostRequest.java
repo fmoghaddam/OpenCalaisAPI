@@ -16,6 +16,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -54,9 +55,9 @@ final public class OpenCalaisPostRequest {
 					if(response.getStatusLine().getStatusCode()!=200){
 						LOG.error("Could not finish request for file "+file.getName()+". Reason: "+response.getStatusLine());
 						continue;
-					}
+					}					
 					final String jsonResult = EntityUtils.toString(response.getEntity());
-					
+					//System.err.println(jsonResult);
 					final JSONObject obj = new JSONObject(jsonResult);
 					Iterator<?> keys = obj.keys();
 
@@ -68,7 +69,9 @@ final public class OpenCalaisPostRequest {
 							try{
 								final JSONObject jsonObject = (JSONObject)object;
 								if(jsonObject.get("_typeGroup").equals("entities")){
-									resultString = resultString.replaceAll(jsonObject.get("name").toString(), getTag(jsonObject.get("_type").toString(),false)+jsonObject.get("name")+getTag(jsonObject.get("_type").toString(),true));
+									final JSONArray instanceJsonArray = (JSONArray)jsonObject.get("instances");
+									final String nameInText = ((JSONObject)instanceJsonArray.get(0)).getString("exact");
+									resultString = resultString.replaceAll(nameInText, getTag(jsonObject.get("_type").toString(),false)+nameInText+getTag(jsonObject.get("_type").toString(),true));
 								}
 							}catch(final JSONException exception){
 								LOG.debug(exception.getMessage());
