@@ -45,6 +45,7 @@ final public class OpenCalaisPostRequest {
 
 			for (final File file : input.listFiles()) {
 				if (file.isFile() && FilenameUtils.getExtension(file.getName()).equals("txt")) {
+					Thread.sleep(100);
 					final FileEntity entity = new FileEntity(file);
 					fileContent = IOUtils.toString(entity.getContent(), "UTF-8");
 					post.setEntity(entity);
